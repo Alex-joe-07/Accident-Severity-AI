@@ -1,10 +1,14 @@
 # 🚦 Explainable AI Framework for Road Accident Severity & Influential Factor Analysis
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Netlify-00C7B7.svg?style=for-the-badge&logo=netlify)](https://accident-severity-ai-v4.netlify.app/)
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
 [![Framework](https://img.shields.io/badge/backend-Flask-green.svg)](https://flask.palletsprojects.com/)
 [![ML Model](https://img.shields.io/badge/ML-XGBoost-orange.svg)](https://xgboost.readthedocs.io/)
 [![XAI](https://img.shields.io/badge/Explainability-SHAP-purple.svg)](https://shap.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
+
+> 🌐 **Live Web Demo**: [https://accident-severity-ai-v4.netlify.app/](https://accident-severity-ai-v4.netlify.app/)  
+> *Click the link above to test the live interactive web interface, evaluate accident conditions, and explore SHAP explainability feature cards.*
 
 An end-to-end Machine Learning web application designed to predict road accident severity (**Minor**, **Major**, **Fatal**) based on environmental, road infrastructure, temporal, and traffic parameters. Integrates **SHAP (SHapley Additive exPlanations)** to explain the top driving risk factors for every prediction in real time.
 
