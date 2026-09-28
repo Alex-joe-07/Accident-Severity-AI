@@ -1,8 +1,105 @@
 /**
- * Main Application Logic & Controller (Modern Redesign)
+ * Main Application Logic & Controller (Static Fallback & Remote API Support)
  */
+const DEFAULT_FEATURE_SCHEMA = {
+    city: {
+        type: "categorical",
+        label: "City",
+        options: ["Kolkata", "Pune", "Chennai", "Mumbai", "Chandigarh", "Hyderabad", "Bangalore", "Delhi"],
+        default: "Kolkata"
+    },
+    state: {
+        type: "categorical",
+        label: "State",
+        options: ["West Bengal", "Maharashtra", "Tamil Nadu", "Punjab", "Telangana", "Karnataka", "Delhi"],
+        default: "West Bengal"
+    },
+    hour: {
+        type: "numerical",
+        label: "Hour of Day",
+        min: 0,
+        max: 23,
+        default: 16
+    },
+    day_of_week: {
+        type: "categorical",
+        label: "Day of Week",
+        options: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        default: "Friday"
+    },
+    is_weekend: {
+        type: "boolean",
+        label: "Is Weekend",
+        options: [0, 1],
+        default: 0
+    },
+    road_type: {
+        type: "categorical",
+        label: "Road Classification",
+        options: ["highway", "urban", "rural"],
+        default: "highway"
+    },
+    lanes: {
+        type: "numerical",
+        label: "Number of Lanes",
+        min: 1,
+        max: 6,
+        default: 3
+    },
+    traffic_signal: {
+        type: "boolean",
+        label: "Traffic Signal Present",
+        options: [0, 1],
+        default: 1
+    },
+    weather: {
+        type: "categorical",
+        label: "Weather Condition",
+        options: ["clear", "fog", "rain"],
+        default: "clear"
+    },
+    visibility: {
+        type: "categorical",
+        label: "Visibility Level",
+        options: ["high", "medium", "low"],
+        default: "high"
+    },
+    temperature: {
+        type: "numerical",
+        label: "Temperature (°C)",
+        min: 0,
+        max: 50,
+        default: 28
+    },
+    traffic_density: {
+        type: "categorical",
+        label: "Traffic Density",
+        options: ["low", "medium", "high"],
+        default: "medium"
+    },
+    cause: {
+        type: "categorical",
+        label: "Primary Cause",
+        options: ["distraction", "drunk driving", "weather", "overspeeding", "poor road"],
+        default: "overspeeding"
+    },
+    vehicles_involved: {
+        type: "numerical",
+        label: "Vehicles Involved",
+        min: 1,
+        max: 10,
+        default: 2
+    },
+    is_peak_hour: {
+        type: "boolean",
+        label: "Is Peak Hour",
+        options: [0, 1],
+        default: 0
+    }
+};
+
 const App = {
-    featureSchema: null,
+    featureSchema: DEFAULT_FEATURE_SCHEMA,
     history: [],
 
     // Preset Scenarios
@@ -79,6 +176,8 @@ const App = {
 
     async init() {
         UI.init();
+        // Immediately populate form using default schema so dropdowns are NEVER blank (e.g. Netlify static host)
+        UI.populateFormOptions(this.featureSchema);
         this.bindEvents();
         await this.checkBackendStatus();
         await this.loadSchemaAndForm();
@@ -112,9 +211,7 @@ const App = {
         // Reset Button
         document.getElementById("btn-reset").addEventListener("click", () => {
             form.reset();
-            if (this.featureSchema) {
-                UI.populateFormOptions(this.featureSchema);
-            }
+            UI.populateFormOptions(this.featureSchema);
             UI.setResultState("empty");
         });
 
@@ -179,7 +276,9 @@ const App = {
                 UI.populateFormOptions(this.featureSchema);
             }
         } catch (error) {
-            console.error("Could not fetch feature schema from backend:", error);
+            console.warn("API feature schema unavailable, using local default schema:", error);
+            // Always ensure form options are populated from default schema when API is unavailable (e.g. Netlify static hosting)
+            UI.populateFormOptions(DEFAULT_FEATURE_SCHEMA);
         }
     },
 
@@ -242,7 +341,7 @@ const App = {
                 UI.setResultState("error", result.error || "Prediction request failed.");
             }
         } catch (error) {
-            UI.setResultState("error", error.message || "Failed to connect to Flask API server.");
+            UI.setResultState("error", "Flask backend API is currently offline. Please start 'python run_server.py' locally or deploy the Flask backend server to Render/Railway to enable live predictions.");
         }
     },
 

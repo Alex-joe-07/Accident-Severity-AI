@@ -2,7 +2,16 @@
  * API Service for Backend Communication
  */
 const API = {
-    baseUrl: "", // Same-origin relative path for static Flask server, or fallback to http://127.0.0.1:5000
+    // Dynamic Base URL detection:
+    // If hosted on Netlify / static origin without backend, fallback to window.API_BASE_URL or localhost
+    get baseUrl() {
+        if (window.API_BASE_URL) return window.API_BASE_URL;
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+            return "";
+        }
+        // Fallback for local development testing when static HTML opened directly
+        return "http://127.0.0.1:5000";
+    },
 
     /**
      * Helper to perform fetch requests with error handling
@@ -32,7 +41,7 @@ const API = {
 
             return data;
         } catch (error) {
-            console.error(`API Error on ${endpoint}:`, error);
+            console.warn(`API request to ${url} failed:`, error);
             throw error;
         }
     },
